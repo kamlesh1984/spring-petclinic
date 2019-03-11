@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    tools {
+        maven 'maven'
+        jdk 'jdk8'
+    }
     
 	environment {
      sonar_url = "http://sonalrul:9000"
@@ -8,10 +13,20 @@ pipeline {
 	 test_url = "https://test_url:port"
    }
     stages {
-        stage('Build') {
+        stage ('Initialize') {
             steps {
-                sh 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dbuildversion=1.0.0-DEV${BUILD_NUMBER}'
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
             }
+        }
+
+        stage ('Build') {
+            steps {
+                sh 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dbuildversion=1.0.0-DEV${BUILD_NUMBER}' 
+            }
+            
         }
         stage('Test') {
             steps {
