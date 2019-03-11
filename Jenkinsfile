@@ -22,7 +22,7 @@ pipeline {
 
         stage ('Build') {
             steps {
-                sh 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dbuildversion=1.0.0-DEV${BUILD_NUMBER}' 
+                sh 'mvn install -Dbuildversion=1.0.0-DEV${BUILD_NUMBER}' 
             }
             
         }
