@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools {
+    maven 'M2_HOME'
+    jdk 'jdk8'
+  }    
     
 	environment {
      sonar_url = "http://sonalrul:9000"
