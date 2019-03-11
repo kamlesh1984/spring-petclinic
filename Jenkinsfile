@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    }
+    
 	environment {
      sonar_url = "http://sonalrul:9000"
 	 Artifactory_url = "http://nexusurl:8081"
@@ -29,3 +29,4 @@ pipeline {
             }
         }
     }
+	}
