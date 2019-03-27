@@ -1,13 +1,34 @@
-node {
-    def server
+pipeline {
+    agent any
+    tools {
+    maven 'M2_HOME'
+	def server
     def buildInfo
     def rtMaven
+  }    
+    
+	environment {
+     sonar_url = "http://sonalrul:9000"
+	 Artifactory_url = "http://35.244.57.13:8081"
+   }
+    stages {
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
+            }
+        }
 
-    stage ('Clone') {
-        git url: 'https://github.com/kamlesh1984/spring-petclinic.git'
-    }
-
-    stage ('Artifactory configuration') {
+        stage ('Build') {
+            steps {
+                sh 'mvn install' 
+            }
+            
+        }
+		}
+	stage ('Artifactory configuration') {
         // Obtain an Artifactory server instance, defined in Jenkins --> Manage:
         server = Artifactory.server Artifactory
 
@@ -19,20 +40,4 @@ node {
 
         buildInfo = Artifactory.newBuildInfo()
     }
-
-    stage ('Test') {
-        rtMaven.run pom: 'spring-petclinic/pom.xml', goals: 'clean test'
-    }
-
-    stage ('Install') {
-        rtMaven.run pom: 'spring-petclinic/pom.xml', goals: 'install', buildInfo: buildInfo
-    }
-
-    stage ('Deploy') {
-        rtMaven.deployer.deployArtifacts buildInfo
-    }
-
-    stage ('Publish build info') {
-        server.publishBuildInfo buildInfo
-    }
-} 
+		}
