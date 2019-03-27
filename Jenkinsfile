@@ -6,9 +6,7 @@ pipeline {
     
 	environment {
      sonar_url = "http://sonalrul:9000"
-	 Artifactory_url = "http://nexusurl:8081"
-	 dev_url = "http://dev_url:port"
-	 test_url = "https://test_url:port"
+	 Artifactory_url = "http://35.244.57.13:8081"
    }
     stages {
         stage ('Initialize') {
@@ -26,20 +24,28 @@ pipeline {
             }
             
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh './jenkins/scripts/deploy.sh'
-            }
-        }
+        stage('Artifactory configuration') {
+		
+	   steps {
+		script {
+			rtMaven.tool = 'M2_HOME' //Maven tool name specified in Jenkins configuration
+		
+			rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server //Defining where the build artifacts should be deployed to
+			
+			rtMaven.resolver releaseRepo:'libs-release', snapshotRepo: 'libs-snapshot', server: server //Defining where Maven Build should download its dependencies from
+			
+			rtMaven.deployer.artifactDeploymentPatterns.addExclude("pom.xml") //Exclude artifacts from being deployed
+			
+			//rtMaven.deployer.deployArtifacts =false // Disable artifacts deployment during Maven run
+		    
+			buildInfo = Artifactory.newBuildInfo() //Publishing build-Info to artifactory
+			
+			buildInfo.retention maxBuilds: 10, maxDays: 7, deleteBuildArtifacts: true
+
+			buildInfo.env.capture = true
+			}
+	    }
+	}
+     
     }
 	}
