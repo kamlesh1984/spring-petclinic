@@ -25,7 +25,7 @@ pipeline {
             
         }
       stage('Publish') {
-      def server = Artifactory.server 'artifactory'
+      def server = Artifactory.server 'Artifactory'
       def rtMaven = Artifactory.newMavenBuild()
       rtMaven.tool = 'M2_HOME'
       rtMaven.resolver server: server, releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot'
