@@ -24,28 +24,16 @@ pipeline {
             }
             
         }
-        stage('Artifactory configuration') {
-		
-	   steps {
-		script {
-			rtMaven.tool = 'M2_HOME' //Maven tool name specified in Jenkins configuration
-		
-			rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server //Defining where the build artifacts should be deployed to
-			
-			rtMaven.resolver releaseRepo:'libs-release', snapshotRepo: 'libs-snapshot', server: server //Defining where Maven Build should download its dependencies from
-			
-			rtMaven.deployer.artifactDeploymentPatterns.addExclude("pom.xml") //Exclude artifacts from being deployed
-			
-			//rtMaven.deployer.deployArtifacts =false // Disable artifacts deployment during Maven run
-		    
-			buildInfo = Artifactory.newBuildInfo() //Publishing build-Info to artifactory
-			
-			buildInfo.retention maxBuilds: 10, maxDays: 7, deleteBuildArtifacts: true
-
-			buildInfo.env.capture = true
-			}
-	    }
-	}
+      stage('Publish') {
+      def server = Artifactory.server 'artifactory'
+      def rtMaven = Artifactory.newMavenBuild()
+      rtMaven.tool = 'M2_HOME'
+      rtMaven.resolver server: server, releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot'
+      rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+      rtMaven.deployer.artifactDeploymentPatterns.addInclude("*stubs*")
+      def buildInfo = rtMaven.run pom: 'person-service/pom.xml', goals: 'clean install'
+      rtMaven.deployer.deployArtifacts buildInfo
+      server.publishBuildInfo buildInfo
      
     }
 	}
