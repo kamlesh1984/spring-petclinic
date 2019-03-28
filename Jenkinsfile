@@ -20,15 +20,15 @@ pipeline {
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "ART",
-                    releaseRepo: "libs-release-local",
-                    snapshotRepo: "libs-snapshot-local"
+                    releaseRepo: "release-build",
+                    snapshotRepo: "snapshot-build"
                 )
 
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
                     serverId: "ART",
-                    releaseRepo: "libs-release",
-                    snapshotRepo: "libs-snapshot"
+                    releaseRepo: "release-build",
+                    snapshotRepo: "snapshot-build"
                 )
             }
         }
