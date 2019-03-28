@@ -10,7 +10,7 @@ pipeline {
         stage ('Artifactory configuration') {
             steps {
                 rtServer (
-                    id: "Artifactory",
+                    id: "ART",
                     url: "http://35.244.57.13:8081/artifactory",
                     credentialsId: "Artifactory"
                 )
@@ -34,7 +34,7 @@ pipeline {
         stage ('Exec Maven') {
             steps {
                 rtMavenRun (
-                    tool: M2_HOME, // Tool name from Jenkins configuration
+                    tool: 'M3', // Tool name from Jenkins configuration
                     pom: 'spring-petclinic/pom.xml',
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
@@ -46,7 +46,7 @@ pipeline {
         stage ('Publish build info') {
             steps {
                 rtPublishBuildInfo (
-                    serverId: "Artifactory"
+                    serverId: "ART"
                 )
             }
         }
