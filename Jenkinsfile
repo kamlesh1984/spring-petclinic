@@ -7,17 +7,7 @@ pipeline {
             }
         }
 		
-		stage ('Build') {
-            steps {
-                rtMavenRun (
-                    tool: 'M3', // Tool name from Jenkins configuration
-                    pom: 'pom.xml',
-                    goals: 'clean install',
-                    deployerId: "MAVEN_DEPLOYER",
-                    resolverId: "MAVEN_RESOLVER"
-                )
-            }
-        }
+		
 
         stage ('Publish on Artifactory') {
             steps {
@@ -43,7 +33,17 @@ pipeline {
             }
         }
 
-        
+        stage ('Build') {
+            steps {
+                rtMavenRun (
+                    tool: 'M3', // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
+            }
+        }
 
         stage ('Publish build info') {
             steps {
