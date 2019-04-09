@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+     sonar_url = "http://35.200.225.134:9000/sonar/"
+    }	 
     stages {
         stage ('Clone') {
             steps {
@@ -44,5 +47,11 @@ pipeline {
                 )
             }
         }
+		stage ('Sonar_JAVA') {
+			steps {
+			    
+			    sh 'mvn -f /var/lib/jenkins/workspace/spring-petclinic/pom.xml -e -B sonarqube:sonarqube  -Dsonar.language=java -Dsonar.sources="./" -Dsonar.inclusions="**/*.java" -Dsonar.host.url="${sonar_url}" -Dsonar.login="admin" -Dsonar.password="admin" -Dsonar.projectKey=petclinic -Dsonar.branch=JAVABranch -Dbuildversion=1.0.0-DEV01'
+                }
+            }
     }
 }
