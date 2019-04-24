@@ -1,5 +1,8 @@
 pipeline {
     agent any
+	tools {
+        maven 'maven'
+    }
     environment {
      sonar_url = "http://35.200.225.134:9000/sonar/"
     }	 
@@ -11,10 +14,7 @@ pipeline {
         }
 		stage ('Build') {
             steps {
-                rtMavenRun (
-                    tool: 'maven', // Tool name from Jenkins configuration
-                    pom: 'pom.xml',
-                    goals: 'clean install'
+                sh 'mvn install' 
                    
                 )
             }
