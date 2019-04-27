@@ -17,10 +17,10 @@ pipeline {
                 sh 'mvn install' 
 				}
 			            }
-			}
-		}
 		stage ('Sonar_Petclinic') {
 			steps {
 			 sh 'mvn sonar:sonar -Dsonar.host.url=http://35.200.202.127:9000 -Dsonar.login=7ca4c46a9982dd07bd22e584d2802c6ad851e70b -Dsonar.projectKey=spring-petclinic -Dsonar.branch=Petclinic'
 			}
+			}				
 			}
+		}
