@@ -1,9 +1,5 @@
 pipeline {
-    agent any
-    def server = Artifactory.newServer url: http://35.244.2.56:8081/artifactory, credentialsId: Artifactory
-    def rtMaven = Artifactory.newMavenBuild()
-    def buildInfo
-	tools {
+    agent any	tools {
         maven 'maven'
     }
     environment {
@@ -25,17 +21,31 @@ pipeline {
 			 sh 'mvn sonar:sonar -Dsonar.host.url=http://35.200.202.127:9000 -Dsonar.login=7ca4c46a9982dd07bd22e584d2802c6ad851e70b -Dsonar.projectKey=spring-petclinic -Dsonar.branch=Petclinic'
 			}
 			}
-        stage ('Artifactory configuration') {
-        rtMaven.tool = MAVEN_TOOL // Tool name from Jenkins configuration
-        rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
-        rtMaven.resolver releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server
-        buildInfo = Artifactory.newBuildInfo()
-    }
+        stage ('Publish on Artifactory') {
+            steps {
+                rtServer (
+                    id: "ART",
+                    url: "http://35.244.2.56:8081/artifactory",
+                    credentialsId: "Artifactory"
+                )
+
+                rtMavenDeployer (
+                    id: "MAVEN_DEPLOYER",
+                    serverId: "ART",
+                    releaseRepo: "example-repo-local",
+                    snapshotRepo: "example-repo-local"
+                )
+            }
+        }
 
     
 
         stage ('Publish build info') {
-        server.publishBuildInfo buildInfo
-    }
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "ART"
+                )
+            }
+        }
 			}
 		}
