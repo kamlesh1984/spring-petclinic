@@ -22,29 +22,13 @@ pipeline {
 			 sh 'mvn sonar:sonar -Dsonar.host.url=http://35.200.202.127:9000 -Dsonar.login=7ca4c46a9982dd07bd22e584d2802c6ad851e70b -Dsonar.projectKey=spring-petclinic -Dsonar.branch=Petclinic'
 			}
 			}
-        stage ('Publish on Artifactory') {
-            steps {
-                rtServer (
-                    id: "ART",
-                    url: "http://35.244.2.56:8081/artifactory",
-                    credentialsId: "Artifactory"
-                )
-
-                rtMavenDeployer (
-                    id: "MAVEN_DEPLOYER",
-                    serverId: "ART",
-                    releaseRepo: "example-repo-local",
-                    snapshotRepo: "example-repo-local"
-                )
-            }
-        }
+        
 
     
 
-        stage ('Publish build info') {
+        stage ('Upload on Nexus') {
             steps {
-                rtPublishBuildInfo (
-                    serverId: "ART"
+                nexusArtifactUploader credentialsId: 'nexus-8081', groupId: 'nexus', nexusUrl: 'http://35.244.2.56:8081/', nexusVersion: 'nexus2', protocol: 'http', repository: 'petclinic-sanpshot', version: '3.0'
                 )
             }
         }
