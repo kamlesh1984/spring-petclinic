@@ -23,13 +23,10 @@ pipeline {
 			}
 			}
         
-
-    
-
-        stage ('Upload on Nexus') {
+		stage ('Upload on Nexus') {
             steps {
-                nexusArtifactUploader credentialsId: 'nexus-8081', groupId: 'nexus', nexusUrl: 'http://35.244.2.56:8081/', nexusVersion: 'nexus2', protocol: 'http', repository: 'petclinic-sanpshot', version: '3.0'
-                )
+                nexusArtifactUploader artifacts: [[artifactId: 'petclinic-sanpshot', classifier: '', file: '/var/lib/jenkins/workspace/testproject_pipeline/target/devops-petclinic-2.1.0.BUILD-SNAPSHOT.jar', type: 'jar']], credentialsId: 'nexus-8081', groupId: 'nexus', nexusUrl: '35.244.2.56:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'petclinic-sanpshot', version: '1.0'
+                
             }
         }
 			}
