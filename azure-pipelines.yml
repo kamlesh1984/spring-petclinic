@@ -13,5 +13,21 @@ pool:
 steps:
 - script: |
     echo Starting the build
-    mvn package
-  displayName: 'Build with Maven'
+  displayName: 'Building Package'
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: false
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    sonarQubeRunAnalysis: false
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/target/'
+    ArtifactName: 'Version0.1'
+    publishLocation: 'Container'
+
+
